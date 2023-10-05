@@ -193,7 +193,9 @@
 
                         @if ((! $loop->last) && $isAddable && $addBetweenAction->isVisible())
                             <li class="flex w-full justify-center">
-                                <div class="rounded-lg bg-white dark:bg-gray-900">
+                                <div
+                                    class="rounded-lg bg-white dark:bg-gray-900"
+                                >
                                     {{ $addBetweenAction(['afterItem' => $uuid]) }}
                                 </div>
                             </li>
