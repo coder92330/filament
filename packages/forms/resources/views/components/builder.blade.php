@@ -5,6 +5,8 @@
         $addAction = $getAction($getAddActionName());
         $addBetweenAction = $getAction($getAddBetweenActionName());
         $cloneAction = $getAction($getCloneActionName());
+        $collapseAllAction = $getAction($getCollapseAllActionName());
+        $expandAllAction = $getAction($getExpandAllActionName());
         $deleteAction = $getAction($getDeleteActionName());
         $moveDownAction = $getAction($getMoveDownActionName());
         $moveUpAction = $getAction($getMoveUpActionName());
@@ -28,24 +30,28 @@
                 ->class(['fi-fo-builder grid gap-y-4'])
         }}
     >
-        @if ($isCollapsible)
+        @if ($isCollapsible && ($collapseAllAction->isVisible() || $expandAllAction->isVisible()))
             <div
                 @class([
                     'flex gap-x-3',
                     'hidden' => count($containers) < 2,
                 ])
             >
-                <span
-                    x-on:click="$dispatch('builder-collapse', '{{ $statePath }}')"
-                >
-                    {{ $getAction('collapseAll') }}
-                </span>
+                @if ($collapseAllAction->isVisible())
+                    <span
+                        x-on:click="$dispatch('builder-collapse', '{{ $statePath }}')"
+                    >
+                        {{ $collapseAllAction }}
+                    </span>
+                @endif
 
-                <span
-                    x-on:click="$dispatch('builder-expand', '{{ $statePath }}')"
-                >
-                    {{ $getAction('expandAll') }}
-                </span>
+                @if ($expandAllAction->isVisible())
+                    <span
+                        x-on:click="$dispatch('builder-expand', '{{ $statePath }}')"
+                    >
+                        {{ $expandAllAction }}
+                    </span>
+                @endif
             </div>
         @endif
 
@@ -125,17 +131,7 @@
                                     <h4
                                         class="truncate text-sm font-medium text-gray-950 dark:text-white"
                                     >
-                                        @php
-                                            $block = $item->getParentComponent();
-
-                                            $block->labelState($item->getRawState());
-                                        @endphp
-
-                                        {{ $item->getParentComponent()->getLabel() }}
-
-                                        @php
-                                            $block->labelState(null);
-                                        @endphp
+                                        {{ $item->getParentComponent()->getLabel($item->getRawState()) }}
 
                                         @if ($hasBlockNumbers)
                                             {{ $loop->iteration }}
@@ -191,7 +187,7 @@
                         </div>
                     </li>
 
-                    @if ((! $loop->last) && $isAddable)
+                    @if ((! $loop->last) && $isAddable && $addBetweenAction->isVisible())
                         <li class="relative -top-2 !mt-0 h-0">
                             <div
                                 class="flex w-full justify-center opacity-0 transition duration-75 hover:opacity-100"

@@ -26,6 +26,8 @@ class Repeater extends Field implements Contracts\CanConcealComponents
 
     protected string | Closure | null $addActionLabel = null;
 
+    protected string | Closure | null $addBetweenActionLabel = null;
+
     protected bool | Closure $isAddable = true;
 
     protected bool | Closure $isDeletable = true;
@@ -51,6 +53,8 @@ class Repeater extends Field implements Contracts\CanConcealComponents
     protected ?Closure $modifyRelationshipQueryUsing = null;
 
     protected ?Closure $modifyAddActionUsing = null;
+
+    protected ?Closure $modifyAddBetweenActionUsing = null;
 
     protected ?Closure $modifyCloneActionUsing = null;
 
@@ -109,6 +113,7 @@ class Repeater extends Field implements Contracts\CanConcealComponents
 
         $this->registerActions([
             fn (Repeater $component): Action => $component->getAddAction(),
+            fn (Repeater $component): Action => $component->getAddBetweenAction(),
             fn (Repeater $component): Action => $component->getCloneAction(),
             fn (Repeater $component): Action => $component->getCollapseAction(),
             fn (Repeater $component): Action => $component->getCollapseAllAction(),
@@ -153,7 +158,7 @@ class Repeater extends Field implements Contracts\CanConcealComponents
             })
             ->button()
             ->size(ActionSize::Small)
-            ->visible(fn (): bool => $this->isAddable());
+            ->visible(fn (Repeater $component): bool => $component->isAddable());
 
         if ($this->modifyAddActionUsing) {
             $action = $this->evaluate($this->modifyAddActionUsing, [
@@ -176,6 +181,69 @@ class Repeater extends Field implements Contracts\CanConcealComponents
         return 'add';
     }
 
+    public function getAddBetweenAction(): Action
+    {
+        $action = Action::make($this->getAddBetweenActionName())
+            ->label(fn (Repeater $component) => $component->getAddBetweenActionLabel())
+            ->color('gray')
+            ->action(function (array $arguments, Repeater $component): void {
+                $newUuid = (string) Str::uuid();
+
+                $items = [];
+
+                foreach ($component->getState() ?? [] as $uuid => $item) {
+                    $items[$uuid] = $item;
+
+                    if ($uuid === $arguments['afterItem']) {
+                        $items[$newUuid] = [];
+                    }
+                }
+
+                $component->state($items);
+
+                $component->getChildComponentContainers()[$newUuid]->fill();
+
+                $component->collapsed(false, shouldMakeComponentCollapsible: false);
+
+                $component->callAfterStateUpdated();
+            })
+            ->button()
+            ->size(ActionSize::Small)
+            ->visible(false);
+
+        if ($this->modifyAddBetweenActionUsing) {
+            $action = $this->evaluate($this->modifyAddBetweenActionUsing, [
+                'action' => $action,
+            ]) ?? $action;
+        }
+
+        return $action;
+    }
+
+    public function addBetweenAction(?Closure $callback): static
+    {
+        $this->modifyAddBetweenActionUsing = $callback;
+
+        return $this;
+    }
+
+    public function getAddBetweenActionName(): string
+    {
+        return 'addBetween';
+    }
+
+    public function addBetweenActionLabel(string | Closure | null $label): static
+    {
+        $this->addBetweenActionLabel = $label;
+
+        return $this;
+    }
+
+    public function getAddBetweenActionLabel(): string
+    {
+        return $this->evaluate($this->addBetweenActionLabel) ?? __('filament-forms::components.repeater.actions.add_between.label');
+    }
+
     public function getCloneAction(): Action
     {
         $action = Action::make($this->getCloneActionName())
@@ -196,7 +264,7 @@ class Repeater extends Field implements Contracts\CanConcealComponents
             })
             ->iconButton()
             ->size(ActionSize::Small)
-            ->visible(fn (): bool => $this->isCloneable());
+            ->visible(fn (Repeater $component): bool => $component->isCloneable());
 
         if ($this->modifyCloneActionUsing) {
             $action = $this->evaluate($this->modifyCloneActionUsing, [
@@ -235,7 +303,7 @@ class Repeater extends Field implements Contracts\CanConcealComponents
             })
             ->iconButton()
             ->size(ActionSize::Small)
-            ->visible(fn (): bool => $this->isDeletable());
+            ->visible(fn (Repeater $component): bool => $component->isDeletable());
 
         if ($this->modifyDeleteActionUsing) {
             $action = $this->evaluate($this->modifyDeleteActionUsing, [
@@ -273,7 +341,7 @@ class Repeater extends Field implements Contracts\CanConcealComponents
             })
             ->iconButton()
             ->size(ActionSize::Small)
-            ->visible(fn (): bool => $this->isReorderable());
+            ->visible(fn (Repeater $component): bool => $component->isReorderable());
 
         if ($this->modifyMoveDownActionUsing) {
             $action = $this->evaluate($this->modifyMoveDownActionUsing, [
@@ -311,7 +379,7 @@ class Repeater extends Field implements Contracts\CanConcealComponents
             })
             ->iconButton()
             ->size(ActionSize::Small)
-            ->visible(fn (): bool => $this->isReorderable());
+            ->visible(fn (Repeater $component): bool => $component->isReorderable());
 
         if ($this->modifyMoveUpActionUsing) {
             $action = $this->evaluate($this->modifyMoveUpActionUsing, [
@@ -353,7 +421,7 @@ class Repeater extends Field implements Contracts\CanConcealComponents
             ->livewireClickHandlerEnabled(false)
             ->iconButton()
             ->size(ActionSize::Small)
-            ->visible(fn (): bool => $this->isReorderableWithDragAndDrop());
+            ->visible(fn (Repeater $component): bool => $component->isReorderableWithDragAndDrop());
 
         if ($this->modifyReorderActionUsing) {
             $action = $this->evaluate($this->modifyReorderActionUsing, [

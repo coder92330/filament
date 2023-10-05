@@ -3,7 +3,10 @@
         $containers = $getChildComponentContainers();
 
         $addAction = $getAction($getAddActionName());
+        $addBetweenAction = $getAction($getAddBetweenActionName());
         $cloneAction = $getAction($getCloneActionName());
+        $collapseAllAction = $getAction($getCollapseAllActionName());
+        $expandAllAction = $getAction($getExpandAllActionName());
         $deleteAction = $getAction($getDeleteActionName());
         $moveDownAction = $getAction($getMoveDownActionName());
         $moveUpAction = $getAction($getMoveUpActionName());
@@ -27,24 +30,28 @@
                 ->class(['fi-fo-repeater grid gap-y-4'])
         }}
     >
-        @if ($isCollapsible)
+        @if ($isCollapsible && ($collapseAllAction->isVisible() || $expandAllAction->isVisible()))
             <div
                 @class([
                     'flex gap-x-3',
                     'hidden' => count($containers) < 2,
                 ])
             >
-                <span
-                    x-on:click="$dispatch('repeater-collapse', '{{ $statePath }}')"
-                >
-                    {{ $getAction('collapseAll') }}
-                </span>
+                @if ($collapseAllAction->isVisible())
+                    <span
+                        x-on:click="$dispatch('repeater-collapse', '{{ $statePath }}')"
+                    >
+                        {{ $collapseAllAction }}
+                    </span>
+                @endif
 
-                <span
-                    x-on:click="$dispatch('repeater-expand', '{{ $statePath }}')"
-                >
-                    {{ $getAction('expandAll') }}
-                </span>
+                @if ($expandAllAction->isVisible())
+                    <span
+                        x-on:click="$dispatch('repeater-expand', '{{ $statePath }}')"
+                    >
+                        {{ $expandAllAction }}
+                    </span>
+                @endif
             </div>
         @endif
 
@@ -183,6 +190,14 @@
                                 {{ $item }}
                             </div>
                         </li>
+
+                        @if ((! $loop->last) && $isAddable && $addBetweenAction->isVisible())
+                            <li class="flex w-full justify-center">
+                                <div class="rounded-lg bg-white dark:bg-gray-900">
+                                    {{ $addBetweenAction(['afterItem' => $uuid]) }}
+                                </div>
+                            </li>
+                        @endif
                     @endforeach
                 </x-filament::grid>
             </ul>

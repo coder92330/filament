@@ -134,7 +134,7 @@ class Builder extends Field implements Contracts\CanConcealComponents
             ->livewireClickHandlerEnabled(false)
             ->button()
             ->size(ActionSize::Small)
-            ->visible(fn (): bool => $this->isAddable());
+            ->visible(fn (Builder $component): bool => $component->isAddable());
 
         if ($this->modifyAddActionUsing) {
             $action = $this->evaluate($this->modifyAddActionUsing, [
@@ -189,7 +189,7 @@ class Builder extends Field implements Contracts\CanConcealComponents
             ->livewireClickHandlerEnabled(false)
             ->button()
             ->size(ActionSize::Small)
-            ->visible(fn (): bool => $this->isAddable());
+            ->visible(fn (Builder $component): bool => $component->isAddable());
 
         if ($this->modifyAddBetweenActionUsing) {
             $action = $this->evaluate($this->modifyAddBetweenActionUsing, [
@@ -232,7 +232,7 @@ class Builder extends Field implements Contracts\CanConcealComponents
             })
             ->iconButton()
             ->size(ActionSize::Small)
-            ->visible(fn (): bool => $this->isCloneable());
+            ->visible(fn (Builder $component): bool => $component->isCloneable());
 
         if ($this->modifyCloneActionUsing) {
             $action = $this->evaluate($this->modifyCloneActionUsing, [
@@ -271,7 +271,7 @@ class Builder extends Field implements Contracts\CanConcealComponents
             })
             ->iconButton()
             ->size(ActionSize::Small)
-            ->visible(fn (): bool => $this->isDeletable());
+            ->visible(fn (Builder $component): bool => $component->isDeletable());
 
         if ($this->modifyDeleteActionUsing) {
             $action = $this->evaluate($this->modifyDeleteActionUsing, [
@@ -309,7 +309,7 @@ class Builder extends Field implements Contracts\CanConcealComponents
             })
             ->iconButton()
             ->size(ActionSize::Small)
-            ->visible(fn (): bool => $this->isReorderable());
+            ->visible(fn (Builder $component): bool => $component->isReorderable());
 
         if ($this->modifyMoveDownActionUsing) {
             $action = $this->evaluate($this->modifyMoveDownActionUsing, [
@@ -347,7 +347,7 @@ class Builder extends Field implements Contracts\CanConcealComponents
             })
             ->iconButton()
             ->size(ActionSize::Small)
-            ->visible(fn (): bool => $this->isReorderable());
+            ->visible(fn (Builder $component): bool => $component->isReorderable());
 
         if ($this->modifyMoveUpActionUsing) {
             $action = $this->evaluate($this->modifyMoveUpActionUsing, [
@@ -389,7 +389,7 @@ class Builder extends Field implements Contracts\CanConcealComponents
             ->livewireClickHandlerEnabled(false)
             ->iconButton()
             ->size(ActionSize::Small)
-            ->visible(fn (): bool => $this->isReorderableWithDragAndDrop());
+            ->visible(fn (Builder $component): bool => $component->isReorderableWithDragAndDrop());
 
         if ($this->modifyReorderActionUsing) {
             $action = $this->evaluate($this->modifyReorderActionUsing, [
