@@ -85,6 +85,10 @@ class Repeater extends Field implements Contracts\CanConcealComponents
      */
     protected ?array $hydratedDefaultState = null;
 
+    protected string | Closure | null $labelBetweenItems = null;
+
+    protected bool | Closure $isItemLabelTruncated = true;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -583,6 +587,20 @@ class Repeater extends Field implements Contracts\CanConcealComponents
         return $this;
     }
 
+    public function labelBetweenItems(string | Closure | null $label): static
+    {
+        $this->labelBetweenItems = $label;
+
+        return $this;
+    }
+
+    public function truncateItemLabel(bool | Closure $condition = true): static
+    {
+        $this->isItemLabelTruncated = $condition;
+
+        return $this;
+    }
+
     public function defaultItems(int | Closure $count): static
     {
         $this->default(static function (Repeater $component) use ($count): array {
@@ -1021,8 +1039,11 @@ class Repeater extends Field implements Contracts\CanConcealComponents
 
     public function getItemLabel(string $uuid): string | Htmlable | null
     {
+        $containter = $this->getChildComponentContainer($uuid);
+
         return $this->evaluate($this->itemLabel, [
-            'state' => $this->getChildComponentContainer($uuid)->getRawState(),
+            'containter' => $containter,
+            'state' => $containter->getRawState(),
             'uuid' => $uuid,
         ]);
     }
@@ -1153,5 +1174,15 @@ class Repeater extends Field implements Contracts\CanConcealComponents
         }
 
         return 'filament-forms::components.repeater';
+    }
+
+    public function getLabelBetweenItems(): ?string
+    {
+        return $this->evaluate($this->labelBetweenItems);
+    }
+
+    public function isItemLabelTruncated(): bool
+    {
+        return (bool) $this->evaluate($this->isItemLabelTruncated);
     }
 }

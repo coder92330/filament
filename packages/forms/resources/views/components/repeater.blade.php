@@ -137,7 +137,14 @@
 
                                     @if (filled($itemLabel))
                                         <h4
-                                            class="truncate text-sm font-medium text-gray-950 dark:text-white"
+                                            @if ($isCollapsible)
+                                                x-on:click.stop="isCollapsed = !isCollapsed"
+                                            @endif
+                                            @class([
+                                                'text-sm font-medium text-gray-950 dark:text-white',
+                                                'truncate' => $isItemLabelTruncated(),
+                                                'cursor-pointer select-none' => $isCollapsible,
+                                            ])
                                         >
                                             {{ $itemLabel }}
                                         </h4>
@@ -191,14 +198,20 @@
                             </div>
                         </li>
 
-                        @if ((! $loop->last) && $isAddable && $addBetweenAction->isVisible())
-                            <li class="flex w-full justify-center">
-                                <div
-                                    class="rounded-lg bg-white dark:bg-gray-900"
-                                >
-                                    {{ $addBetweenAction(['afterItem' => $uuid]) }}
-                                </div>
-                            </li>
+                        @if (! $loop->last)
+                            @if ($isAddable && $addBetweenAction->isVisible())
+                                <li class="flex w-full justify-center">
+                                    <div class="rounded-lg bg-white dark:bg-gray-900">
+                                        {{ $addBetweenAction(['afterItem' => $uuid]) }}
+                                    </div>
+                                </li>
+                            @elseif (filled($labelBetweenItems = $getLabelBetweenItems()))
+                                <li class="relative border-t">
+                                    <span class="absolute -top-3 left-3 bg-white font-medium text-sm px-1">
+                                        {{ $labelBetweenItems }}
+                                    </span>
+                                </li>
+                            @endif
                         @endif
                     @endforeach
                 </x-filament::grid>

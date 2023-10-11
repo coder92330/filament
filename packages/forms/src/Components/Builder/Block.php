@@ -40,11 +40,11 @@ class Block extends Component
         return $this->evaluate($this->icon);
     }
 
-    public function getLabel(?array $state = null): string | Htmlable
+    public function getLabel(?array $state = null, ?string $uuid = null): string | Htmlable
     {
         return $this->evaluate(
             $this->label,
-            ['state' => $state],
+            ['state' => $state, 'uuid' => $uuid],
         ) ?? $this->getDefaultLabel();
     }
 }

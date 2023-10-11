@@ -129,9 +129,16 @@
 
                                 @if ($hasBlockLabels)
                                     <h4
-                                        class="truncate text-sm font-medium text-gray-950 dark:text-white"
+                                        @if ($isCollapsible)
+                                            x-on:click.stop="isCollapsed = !isCollapsed"
+                                        @endif
+                                        @class([
+                                            'text-sm font-medium text-gray-950 dark:text-white',
+                                            'truncate' => $isBlockLabelTruncated(),
+                                            'cursor-pointer select-none' => $isCollapsible,
+                                        ])
                                     >
-                                        {{ $item->getParentComponent()->getLabel($item->getRawState()) }}
+                                        {{ $item->getParentComponent()->getLabel($item->getRawState(), $uuid) }}
 
                                         @if ($hasBlockNumbers)
                                             {{ $loop->iteration }}
@@ -187,27 +194,35 @@
                         </div>
                     </li>
 
-                    @if ((! $loop->last) && $isAddable && $addBetweenAction->isVisible())
-                        <li class="relative -top-2 !mt-0 h-0">
-                            <div
-                                class="flex w-full justify-center opacity-0 transition duration-75 hover:opacity-100"
-                            >
+                    @if (! $loop->last)
+                        @if ($isAddable && $addBetweenAction->isVisible())
+                            <li class="relative -top-2 !mt-0 h-0">
                                 <div
-                                    class="fi-fo-builder-block-picker-ctn rounded-lg bg-white dark:bg-gray-900"
+                                    class="flex w-full justify-center opacity-0 transition duration-75 hover:opacity-100"
                                 >
-                                    <x-filament-forms::builder.block-picker
-                                        :action="$addBetweenAction"
-                                        :after-item="$uuid"
-                                        :blocks="$getBlocks()"
-                                        :state-path="$statePath"
+                                    <div
+                                        class="fi-fo-builder-block-picker-ctn rounded-lg bg-white dark:bg-gray-900"
                                     >
-                                        <x-slot name="trigger">
-                                            {{ $addBetweenAction }}
-                                        </x-slot>
-                                    </x-filament-forms::builder.block-picker>
+                                        <x-filament-forms::builder.block-picker
+                                            :action="$addBetweenAction"
+                                            :after-item="$uuid"
+                                            :blocks="$getBlocks()"
+                                            :state-path="$statePath"
+                                        >
+                                            <x-slot name="trigger">
+                                                {{ $addBetweenAction }}
+                                            </x-slot>
+                                        </x-filament-forms::builder.block-picker>
+                                    </div>
                                 </div>
-                            </div>
-                        </li>
+                            </li>
+                        @elseif (filled($labelBetweenItems = $getLabelBetweenItems()))
+                            <li class="relative border-t">
+                                <span class="absolute -top-3 left-3 bg-white font-medium text-sm px-1">
+                                    {{ $labelBetweenItems }}
+                                </span>
+                            </li>
+                        @endif
                     @endif
                 @endforeach
             </ul>
