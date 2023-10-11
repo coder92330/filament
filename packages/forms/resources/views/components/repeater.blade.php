@@ -201,13 +201,17 @@
                         @if (! $loop->last)
                             @if ($isAddable && $addBetweenAction->isVisible())
                                 <li class="flex w-full justify-center">
-                                    <div class="rounded-lg bg-white dark:bg-gray-900">
+                                    <div
+                                        class="rounded-lg bg-white dark:bg-gray-900"
+                                    >
                                         {{ $addBetweenAction(['afterItem' => $uuid]) }}
                                     </div>
                                 </li>
                             @elseif (filled($labelBetweenItems = $getLabelBetweenItems()))
                                 <li class="relative border-t">
-                                    <span class="absolute -top-3 left-3 bg-white font-medium text-sm px-1">
+                                    <span
+                                        class="absolute -top-3 left-3 bg-white px-1 text-sm font-medium"
+                                    >
                                         {{ $labelBetweenItems }}
                                     </span>
                                 </li>

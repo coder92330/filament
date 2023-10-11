@@ -218,7 +218,9 @@
                             </li>
                         @elseif (filled($labelBetweenItems = $getLabelBetweenItems()))
                             <li class="relative border-t">
-                                <span class="absolute -top-3 left-3 bg-white font-medium text-sm px-1">
+                                <span
+                                    class="absolute -top-3 left-3 bg-white px-1 text-sm font-medium"
+                                >
                                     {{ $labelBetweenItems }}
                                 </span>
                             </li>
